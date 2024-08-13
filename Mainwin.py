@@ -66,17 +66,14 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+    def start_server(self):pass
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.chat_text.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">我是聊天内容</p></body></html>"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "hh的局域网聊天工具"))
+        self.chat_text.setHtml(_translate("MainWindow", "聊天内容"))
         self.join_server.setText(_translate("MainWindow", "连接服务器"))
-        self.LOGO.setText(_translate("MainWindow", "hh的局域网聊天软件"))
+        self.LOGO.setText(_translate("MainWindow", "hh的局域网聊天工具"))
         self.version.setText(_translate("MainWindow", "V3.0.1"))
         self.craft_server.setText(_translate("MainWindow", "创建服务器"))
         self.input_text.setText(_translate("MainWindow", "我是输入框"))
