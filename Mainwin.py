@@ -87,7 +87,12 @@ class Ui_MainWindow(object):
     def start_servers(self):
         self.servers = threading.Thread(target=server.listen_socket)
         self.servers.start()
-    def join_servers(self):pass
+        self.craft_server.setEnabled(False)
+        self.join_server.setEnabled(False)
+    def join_servers(self):
+        self.text_add("请输入用户名")
+        self.craft_server.setEnabled(False)
+        self.join_server.setEnabled(False)
 
 
     def retranslateUi(self, MainWindow):

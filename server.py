@@ -82,13 +82,13 @@ def listen_socket():
                 t.append(ts)
                 print("已建立连接")
             else:
-                print("服务端验证失败")
+                print("服务端校验失败")
                 print("以下是错误诊断信息:")
                 print(yn,"\n",a)
                 continue
         else:
-            print("连接请求有误，可能是因为连接协议不同导致的")
-            print("请使用相同协议的客户端连接\n以下是错误诊断信息:")
+            print("连接请求校验失败")
+            print("以下是错误诊断信息:")
             print(strs, f"\nRequest-connection-V{transport_protocol}")
             continue
 
