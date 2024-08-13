@@ -9,9 +9,17 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import server
+import threading
+import time
 
 
 class Ui_MainWindow(object):
+    def __init__(self):
+        self.is_running=True
+        self.off_process = threading.Thread(target=self.end_process)
+        self.off_process.start()
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(825, 600)
@@ -20,6 +28,7 @@ class Ui_MainWindow(object):
         self.chat_text = QtWidgets.QTextEdit(self.centralwidget)
         self.chat_text.setGeometry(QtCore.QRect(150, 80, 650, 460))
         self.chat_text.setObjectName("chat_text")
+        self.chat_text.setReadOnly(True)
         self.join_server = QtWidgets.QPushButton(self.centralwidget)
         self.join_server.setGeometry(QtCore.QRect(10, 70, 95, 30))
         self.join_server.setObjectName("join_server")
@@ -63,15 +72,28 @@ class Ui_MainWindow(object):
         self.pushButton_2.setGeometry(QtCore.QRect(740, 20, 60, 52))
         self.pushButton_2.setObjectName("pushButton_2")
         MainWindow.setCentralWidget(self.centralwidget)
-
+        self.craft_server.clicked.connect(self.start_servers)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-    def start_server(self):pass
+
+    def end_process(self):
+        # 线程结束器(把is_running设为False以关闭所有线程)
+        while self.is_running:
+            pass
+        server.is_running=False
+
+    def text_add(self,strs):
+        self.chat_text.setText(self.chat_text.toPlainText()+strs)
+    def start_servers(self):
+        self.servers = threading.Thread(target=server.listen_socket)
+        self.servers.start()
+    def join_servers(self):pass
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "hh的局域网聊天工具"))
-        self.chat_text.setHtml(_translate("MainWindow", "聊天内容"))
+        self.chat_text.setText(_translate("MainWindow", ""))
         self.join_server.setText(_translate("MainWindow", "连接服务器"))
         self.LOGO.setText(_translate("MainWindow", "hh的局域网聊天工具"))
         self.version.setText(_translate("MainWindow", "V3.0.1"))

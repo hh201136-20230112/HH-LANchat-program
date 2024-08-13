@@ -1,6 +1,9 @@
 import socket
 import threading
 
+
+print("HH的局域网通讯程序-服务端 正在初始化")
+
 transport_protocol = 2.0
 sockets = []
 # 这里面的套接字用来接收数据
@@ -12,14 +15,16 @@ ports = 9980
 # 端口号
 myname = socket.gethostname()
 myIP = socket.gethostbyname(myname)
+is_running=True
 
-print("HH的局域网通讯程序-服务端")
 print(f"当前连接协议：HH_web-V{transport_protocol}")
 print("请使用相同协议的客户端连接")
 print("最大连接数：20")
 print("当前网络IPV6支持：", socket.has_ipv6)
 print(f"本机主机名：{myname}")
 print(f"本机局域网IP：{myIP}")
+
+print("HH的局域网通讯程序-服务端 初始化完成")
 
 
 def retransmission(index):
@@ -45,7 +50,9 @@ def listen_socket():
     s.listen(20)
     # 创建TCP服务器
     print("服务器已准备好接收连接请求")
+    print("HH的局域网通讯程序-服务端 已启动")
     while True:
+        if not is_running:return 0
         print("开始等待连接")
         new_s = s.accept()
         print("检测到连接请求，套接字信息：", new_s)
