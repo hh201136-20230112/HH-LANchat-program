@@ -1,5 +1,6 @@
 import socket
 import threading
+import time
 
 print("HH的局域网通讯程序-服务端 正在初始化")
 
@@ -29,15 +30,20 @@ print("HH的局域网通讯程序-服务端 初始化完成")
 def retransmission(index):
     global sockets
     print(f"第{index}台设备已建立连接")
+    sockets[index].setblocking(True)
     while True:
+        if not is_running:
+            sockets[index].close()
+            return 0
         datas = sockets[index].recvfrom(2048)[0]
+        if str(datas)=="b''":continue
         # print(f"接收数据:{datas}")
         for i in sockets:
             try:
                 i.send(datas)
             except:
                 pass
-        print(f"来自第{index + 1}台设备的信息转发完成")
+        print(f"来自第{index}台设备的信息转发完成")
 
 
 def listen_socket():
@@ -57,43 +63,45 @@ def listen_socket():
         try:
             if not is_running: break
             new_s = s.accept()
-            print("检测到连接请求，套接字信息：", new_s)
-            c = new_s[0].recvfrom(2048)
-            client_ip = new_s[1][0]
-            new_s = new_s[0]
-            print(f"连接请求ip：{client_ip}")
-            strs = str(c[0])
-            yn = strs.replace(f"Request-connection-V{transport_protocol} ", "")
-            # print(strs)
-            if f"Request-connection-V{transport_protocol}" in strs:
-                print("已接收到客户端连接请求")
-                strs.split(" ")
-                client_uuid = strs.split(" ")[2]
-                b = bytes(client_uuid, "utf-8")
-                new_s.send(b)
-                print("客户端连接校验信息已发送，等待客户端通过验证")
-                a = str(new_s.recvfrom(2048))
-                print(f"来自客户端的连接请求校验信息：{a}\n服务器请求校验信息：{yn}")
-                if yn in a:
-                    print("服务端验证通过")
-                    new_s.send(bytes("hello", "utf-8"))  # 服务器在结束该连接请求前发送给客户端的数据
-                    sockets.append(new_s)
-                    print("启动数据处理线程")
-                    ts = threading.Thread(target=retransmission, args=tuple([len(sockets) - 1]))
-                    ts.start()
-                    t.append(ts)
-                    print("已建立连接")
-                else:
-                    print("服务端校验失败")
-                    print("以下是错误诊断信息:")
-                    print(yn, "\n", a)
-                    continue
-            else:
-                print("连接请求校验失败")
-                print("以下是错误诊断信息:")
-                print(strs, f"\nRequest-connection-V{transport_protocol}")
-                continue
         except socket.error:
-            pass
+            continue
+        print("检测到连接请求，套接字信息：", new_s)
+        c = new_s[0].recvfrom(2048)
+        client_ip = new_s[1][0]
+        new_s = new_s[0]
+        print(f"连接请求ip：{client_ip}")
+        strs = str(c[0])
+        yn = strs.replace(f"Request-connection-V{transport_protocol} ", "")
+        # print(strs)
+        if f"Request-connection-V{transport_protocol}" in strs:
+            print("已接收到客户端连接请求")
+            strs.split(" ")
+            client_uuid = strs.split(" ")[2]
+            b = bytes(client_uuid, "utf-8")
+            new_s.send(b)
+            print("客户端连接校验信息已发送，等待客户端通过验证")
+            time.sleep(0.01)
+            a = str(new_s.recvfrom(2048))
+            print(f"来自客户端的连接请求校验信息：{a}\n服务器请求校验信息：{yn}")
+            if yn in a:
+                print("服务端验证通过")
+                time.sleep(0.01)
+                new_s.send(bytes("hello", "utf-8"))  # 服务器在结束该连接请求前发送给客户端的数据
+                sockets.append(new_s)
+                print("启动数据处理线程")
+                ts = threading.Thread(target=retransmission, args=tuple([len(sockets) - 1]))
+                ts.start()
+                t.append(ts)
+                print("已建立连接")
+            else:
+                print("服务端校验失败")
+                print("以下是错误诊断信息:")
+                print(yn, "\n", a)
+                continue
+        else:
+            print("连接请求校验失败")
+            print("以下是错误诊断信息:")
+            print(strs, f"\nRequest-connection-V{transport_protocol}")
+            continue
 
     s.close()

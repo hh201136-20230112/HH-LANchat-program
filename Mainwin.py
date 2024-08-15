@@ -26,6 +26,7 @@ class Ui_MainWindow(object):
         self.open_port = 9999
         self.join_sever_step = -1  # 用于控制配置服务器相关数据，-1表示配置完成
         self.s = socket.socket()
+        self.Built_in_server=False
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -87,7 +88,7 @@ class Ui_MainWindow(object):
 
     def join_server_function(self):
         self.text_add("开始连接服务器\n")
-        self.s.bind(("", self.port))
+        self.s.bind(("", self.open_port))
         self.s.connect((self.server_ip, 9980))
         byteses = bytes(f"Request-connection-V{transport_protocol} {self.user_name} {uuids}", "utf-8")
         # Request-connection-Vn.n 用于校验客户端与服务器连接协议是否相同
@@ -109,8 +110,10 @@ class Ui_MainWindow(object):
 
     def text_process(self):
         # 用于处理输入框输入的数据
+        _translate = QtCore.QCoreApplication.translate
         strs = str(self.input_text.text())
-        self.text_add(f"{self.user_name}:{strs} - {time.strftime('%Y/%m/%d %H:%M')}")
+        self.input_text.setText(_translate("MainWindow", ""))
+        self.text_add(f"{self.user_name}:{strs} - {time.strftime('%Y/%m/%d %H:%M')}\n")
         if self.join_sever_step == -1:
             # 进入普通消息处理
             pass
@@ -118,8 +121,13 @@ class Ui_MainWindow(object):
             # 进入服务器加入数据处理
             if self.join_sever_step == 2:
                 self.user_name = strs
-                self.join_sever_step -= 1
-                self.text_add("请输入服务器IP\n")
+                if self.Built_in_server:
+                    self.join_sever_step = 0
+                    self.server_ip="127.0.0.1"
+                    self.text_add("请输入本机开启的端口号(缺省9999)\n")
+                else:
+                    self.join_sever_step -= 1
+                    self.text_add("请输入服务器IP\n")
             elif self.join_sever_step == 1:
                 self.server_ip = strs
                 self.join_sever_step -= 1
@@ -129,6 +137,8 @@ class Ui_MainWindow(object):
                     if strs=="":self.open_port = 9999
                     else:self.open_port = int(strs)
                     self.text_add("服务器配置完成,正在连接服务器\n")
+                    self.join_server_function()
+                    self.text_add("服务器已连接\n")
                 except ValueError:
                     self.text_add("端口号输入错误,请确认是否输入了非数字字符,或者选择使用缺省值(留空)\n")
 
@@ -137,6 +147,7 @@ class Ui_MainWindow(object):
         while self.is_running:
             pass
         server.is_running = False
+        self.s.close()
 
     def text_add(self, strs):
         self.chat_text.setText(self.chat_text.toPlainText() + strs)
@@ -148,6 +159,9 @@ class Ui_MainWindow(object):
         self.craft_server.setEnabled(False)
         self.join_server.setEnabled(False)
         self.text_add("服务器加载完成\n")
+        self.Built_in_server=True
+        self.text_add("请输入用户名\n")
+        self.join_sever_step = 2
 
     def join_servers(self):
         self.text_add("请输入用户名\n")
