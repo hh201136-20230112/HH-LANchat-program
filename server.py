@@ -41,7 +41,7 @@ def retransmission(index):
         for i in sockets:
             try:
                 i.send(datas)
-            except:
+            except Exception as e:
                 pass
         print(f"来自第{index}台设备的信息转发完成")
 

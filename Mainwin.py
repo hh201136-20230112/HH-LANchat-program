@@ -27,6 +27,7 @@ class Ui_MainWindow(object):
         self.join_sever_step = -1  # 用于控制配置服务器相关数据，-1表示配置完成
         self.s = socket.socket()
         self.Built_in_server=False
+        self.is_online=False
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -86,6 +87,11 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+
+    def text_add(self, strs):
+        _translate = QtCore.QCoreApplication.translate
+        self.chat_text.setText(_translate("MainWindow", str(self.chat_text.toPlainText() + strs)))
+
     def join_server_function(self):
         self.text_add("开始连接服务器\n")
         self.s.bind(("", self.open_port))
@@ -107,16 +113,20 @@ class Ui_MainWindow(object):
         self.text_add("丢包检测通过\n")
         self.join_sever_step -= 1
         self.text_add("连接完成\n")
+        self.is_online=True
+        self.chat_get_data = threading.Thread(target=self.get_text)
+        self.chat_get_data.start()
 
     def text_process(self):
         # 用于处理输入框输入的数据
         _translate = QtCore.QCoreApplication.translate
         strs = str(self.input_text.text())
         self.input_text.setText(_translate("MainWindow", ""))
-        self.text_add(f"{self.user_name}:{strs} - {time.strftime('%Y/%m/%d %H:%M')}\n")
         if self.join_sever_step == -1:
             # 进入普通消息处理
-            pass
+            if self.is_online:
+                self.s.send(bytes(f"{self.user_name}:{strs} - {time.strftime('%Y/%m/%d %H:%M')}\n","utf-8"))
+
         else:
             # 进入服务器加入数据处理
             if self.join_sever_step == 2:
@@ -142,6 +152,16 @@ class Ui_MainWindow(object):
                 except ValueError:
                     self.text_add("端口号输入错误,请确认是否输入了非数字字符,或者选择使用缺省值(留空)\n")
 
+    def get_text(self):
+        # 获取数据
+        while self.is_running:
+            strs=self.s.recvfrom(4096)[0]
+            if strs=="b''":continue
+            strs=str(strs,"UTF-8")
+            print(strs)
+            time.sleep(0.01)
+            self.text_add("strs")
+
     def end_process(self):
         # 线程结束器(把is_running设为False以关闭所有线程)
         while self.is_running:
@@ -149,8 +169,6 @@ class Ui_MainWindow(object):
         server.is_running = False
         self.s.close()
 
-    def text_add(self, strs):
-        self.chat_text.setText(self.chat_text.toPlainText() + strs)
 
     def start_servers(self):
         self.text_add("正在启动服务器\n")
@@ -193,7 +211,7 @@ IPV6支持：{socket.has_ipv6}
         self.chat.setText(_translate("MainWindow", "聊天"))
         self.about.setText(_translate("MainWindow", "关于"))
         self.status_bar.setTitle(_translate("MainWindow", "状态栏"))
-        self.server_status.setText(_translate("MainWindow", "服务器:999.999.999.999"))
+        self.server_status.setText(_translate("MainWindow", f"服务器:{self.server_ip}"))
         self.label.setText(_translate("MainWindow", "延迟:9999ms"))
         self.label_2.setText(_translate("MainWindow", "在线人数:99"))
         self.label_3.setText(_translate("MainWindow", "公网延迟:9999ms"))
