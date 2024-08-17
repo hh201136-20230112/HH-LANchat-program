@@ -47,6 +47,7 @@ def retransmission(index):
 
 
 def listen_socket():
+    # 服务器核心函数(里面有很多sleep,防止"BlockingIOError: [WinError 10035] 无法立即完成一个非阻止性套接字操作"的)
     global sockets, ports, out, t
     s = socket.socket()
     s.bind(("", ports))
@@ -66,6 +67,7 @@ def listen_socket():
         except socket.error:
             continue
         print("检测到连接请求，套接字信息：", new_s)
+        time.sleep(0.01)
         c = new_s[0].recvfrom(2048)
         client_ip = new_s[1][0]
         new_s = new_s[0]

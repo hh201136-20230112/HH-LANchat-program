@@ -165,10 +165,12 @@ class Ui_MainWindow(object):
             if strs == "b''": continue
             strs = str(strs, "UTF-8")
             print(strs)
-            self.text_+=strs
+            # self.text_ += strs
+            self.chat_text.append(strs)
 
     def refresh_text(self):
         # 用来把缓存里的数据转移到聊天记录控件里(不然会炸内存啊啊啊啊啊啊啊啊啊啊啊)
+        # 已经修复了哈哈哈哈哈哈哈哈哈哈哈
         self.text_add(self.text_)
         self.text_=""
 
@@ -208,7 +210,7 @@ IPV6支持：{socket.has_ipv6}
 
 使用前须知:
     本程序中发送的内容均以明文传输,未经过加密,请不要发送重要信息
-    由于一些技术问题,需要手动点击左边的刷新按钮来获取新的聊天记录
+    由于一些技术问题,需要手动点击左边的刷新按钮来获取新的聊天记录(已经修复,但是不能保证能够正常工作)
 
 输入/以使用指令
 """))
