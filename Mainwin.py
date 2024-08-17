@@ -14,8 +14,11 @@ import threading
 import time
 import socket
 import uuid
+
 transport_protocol = 2.0
 uuids = str(uuid.uuid1())
+
+
 class Ui_MainWindow(object):
     def __init__(self):
         self.is_running = True
@@ -26,8 +29,9 @@ class Ui_MainWindow(object):
         self.open_port = 9999
         self.join_sever_step = -1  # 用于控制配置服务器相关数据，-1表示配置完成
         self.s = socket.socket()
-        self.Built_in_server=False
-        self.is_online=False
+        self.Built_in_server = False
+        self.is_online = False
+        self.text_ = ""  # 用于临时存放数据
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -56,9 +60,9 @@ class Ui_MainWindow(object):
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(720, 549, 80, 41))
         self.pushButton.setObjectName("pushButton")
-        self.chat = QtWidgets.QPushButton(self.centralwidget)
-        self.chat.setGeometry(QtCore.QRect(10, 150, 95, 30))
-        self.chat.setObjectName("chat")
+        self.refresh = QtWidgets.QPushButton(self.centralwidget)
+        self.refresh.setGeometry(QtCore.QRect(10, 150, 95, 30))
+        self.refresh.setObjectName("refresh")
         self.about = QtWidgets.QPushButton(self.centralwidget)
         self.about.setGeometry(QtCore.QRect(10, 560, 95, 30))
         self.about.setObjectName("about")
@@ -84,9 +88,9 @@ class Ui_MainWindow(object):
         self.craft_server.clicked.connect(self.start_servers)
         self.join_server.clicked.connect(self.join_servers)
         self.pushButton.clicked.connect(self.text_process)
+        self.refresh.clicked.connect(self.refresh_text)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
 
     def text_add(self, strs):
         _translate = QtCore.QCoreApplication.translate
@@ -113,7 +117,7 @@ class Ui_MainWindow(object):
         self.text_add("丢包检测通过\n")
         self.join_sever_step -= 1
         self.text_add("连接完成\n")
-        self.is_online=True
+        self.is_online = True
         self.chat_get_data = threading.Thread(target=self.get_text)
         self.chat_get_data.start()
 
@@ -125,7 +129,7 @@ class Ui_MainWindow(object):
         if self.join_sever_step == -1:
             # 进入普通消息处理
             if self.is_online:
-                self.s.send(bytes(f"{self.user_name}:{strs} - {time.strftime('%Y/%m/%d %H:%M')}\n","utf-8"))
+                self.s.send(bytes(f"{self.user_name}:{strs} - {time.strftime('%Y/%m/%d %H:%M')}\n", "utf-8"))
 
         else:
             # 进入服务器加入数据处理
@@ -133,7 +137,7 @@ class Ui_MainWindow(object):
                 self.user_name = strs
                 if self.Built_in_server:
                     self.join_sever_step = 0
-                    self.server_ip="127.0.0.1"
+                    self.server_ip = "127.0.0.1"
                     self.text_add("请输入本机开启的端口号(缺省9999)\n")
                 else:
                     self.join_sever_step -= 1
@@ -144,8 +148,10 @@ class Ui_MainWindow(object):
                 self.text_add("请输入本机开启的端口号(缺省9999)\n")
             elif self.join_sever_step == 0:
                 try:
-                    if strs=="":self.open_port = 9999
-                    else:self.open_port = int(strs)
+                    if strs == "":
+                        self.open_port = 9999
+                    else:
+                        self.open_port = int(strs)
                     self.text_add("服务器配置完成,正在连接服务器\n")
                     self.join_server_function()
                     self.text_add("服务器已连接\n")
@@ -155,12 +161,16 @@ class Ui_MainWindow(object):
     def get_text(self):
         # 获取数据
         while self.is_running:
-            strs=self.s.recvfrom(4096)[0]
-            if strs=="b''":continue
-            strs=str(strs,"UTF-8")
+            strs = self.s.recvfrom(4096)[0]
+            if strs == "b''": continue
+            strs = str(strs, "UTF-8")
             print(strs)
-            time.sleep(0.01)
-            self.text_add("strs")
+            self.text_+=strs
+
+    def refresh_text(self):
+        # 用来把缓存里的数据转移到聊天记录控件里(不然会炸内存啊啊啊啊啊啊啊啊啊啊啊)
+        self.text_add(self.text_)
+        self.text_=""
 
     def end_process(self):
         # 线程结束器(把is_running设为False以关闭所有线程)
@@ -169,7 +179,6 @@ class Ui_MainWindow(object):
         server.is_running = False
         self.s.close()
 
-
     def start_servers(self):
         self.text_add("正在启动服务器\n")
         self.servers = threading.Thread(target=server.listen_socket)
@@ -177,7 +186,7 @@ class Ui_MainWindow(object):
         self.craft_server.setEnabled(False)
         self.join_server.setEnabled(False)
         self.text_add("服务器加载完成\n")
-        self.Built_in_server=True
+        self.Built_in_server = True
         self.text_add("请输入用户名\n")
         self.join_sever_step = 2
 
@@ -198,7 +207,8 @@ IPV6支持：{socket.has_ipv6}
 本机UUID:{uuids}
 
 使用前须知:
-    本程序中发送的内容均以明文传输，未经过加密，请不要发送重要信息
+    本程序中发送的内容均以明文传输,未经过加密,请不要发送重要信息
+    由于一些技术问题,需要手动点击左边的刷新按钮来获取新的聊天记录
 
 输入/以使用指令
 """))
@@ -208,7 +218,7 @@ IPV6支持：{socket.has_ipv6}
         self.craft_server.setText(_translate("MainWindow", "创建服务器"))
         self.input_text.setText(_translate("MainWindow", ""))
         self.pushButton.setText(_translate("MainWindow", "发送"))
-        self.chat.setText(_translate("MainWindow", "聊天"))
+        self.refresh.setText(_translate("MainWindow", "刷新"))
         self.about.setText(_translate("MainWindow", "关于"))
         self.status_bar.setTitle(_translate("MainWindow", "状态栏"))
         self.server_status.setText(_translate("MainWindow", f"服务器:{self.server_ip}"))
