@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>825</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTextEdit" name="chat_text">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>80</y>
+      <width>650</width>
+      <height>460</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;我是聊天内容&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="join_server">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>95</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>连接服务器</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="LOGO">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>4</y>
+      <width>135</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>hh的局域网聊天软件</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="version">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>30</y>
+      <width>51</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>V3.0.1</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="craft_server">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>95</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>创建服务器</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="input_text">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>549</y>
+      <width>570</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>我是输入框</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>549</y>
+      <width>80</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>发送</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="chat">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>150</y>
+      <width>95</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>聊天</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="about">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>560</y>
+      <width>95</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>关于</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="status_bar">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>10</y>
+      <width>581</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>状态栏</string>
+    </property>
+    <widget class="QLabel" name="server_status">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>181</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>服务器:999.999.999.999</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>201</x>
+       <y>14</y>
+       <width>91</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>延迟:9999ms</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>14</y>
+       <width>91</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>在线人数:99</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>400</x>
+       <y>14</y>
+       <width>121</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>公网延迟:9999ms</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>740</x>
+      <y>20</y>
+      <width>60</width>
+      <height>52</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>刷新</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
