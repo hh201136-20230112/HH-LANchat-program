@@ -12,7 +12,5 @@ if __name__ == "__main__":
     try:
         mainwin.show()
         sys.exit(app.exec_())
-    except:
-        raise
     finally:
-        ui.is_running=False
+        ui.is_running = False
