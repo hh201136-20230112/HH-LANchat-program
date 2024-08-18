@@ -106,7 +106,7 @@ class Ui_MainWindow(object):
 
     def commands_run_pythoncode(self, code):
         self.text_add("开始执行代码")
-        exec(code)
+        exec(str(code).replace("'","").replace("[","").replace("]","").replace(", ","\n"))
         self.text_add("执行完成")
 
     def load_commands(self):
