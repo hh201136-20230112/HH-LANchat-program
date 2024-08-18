@@ -36,6 +36,7 @@ class Ui_MainWindow(object):
         self.text_ = ""  # 用于临时存放数据
         self.commands = {}  # 使用lambda来保存指令
         self.commands_text = []  # 存放指令需要的字符串
+        self.is_server_op=False
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -107,7 +108,22 @@ class Ui_MainWindow(object):
     def commands_run_pythoncode(self, code):
         self.text_add("开始执行代码")
         exec(str(code).replace("'","").replace("[","").replace("]","").replace(", ","\n"))
-        self.text_add("执行完成")
+        self.text_add("代码执行完成")
+
+    def commands_robot(self,lists):
+        if not self.is_online:
+            self.text_add("请先连接服务器")
+            return 0
+        name = lists[0]
+        strs = lists[1]
+        self.s.send(bytes(f"{name}:{strs} - {time.strftime('%Y/%m/%d %H:%M')}", "utf-8"))
+
+    def commands_op(self,UUID):
+        self.s.send(bytes(f"/data give_op {UUID[0]}", "utf-8"))
+
+    def commands_ban(self,UUID):
+        self.s.send(bytes(f"/data ban_user {UUID[0]}", "utf-8"))
+
 
     def load_commands(self):
         self.text_add("开始载入命令")
@@ -120,11 +136,18 @@ class Ui_MainWindow(object):
 指令列表:
 /help --- 获取关于指令的帮助信息
 /run_pythoncode 代码 --- 使用自带的Python解释器运行输入的代码(高危操作,可能导致程序崩溃)
+/robot 名字 文本 --- 以虚拟用户的身份发送信息
+/data --- 特殊指令,用于传输数据,不会显示,客户端无法使用指令执行
+/op UUID --- 将UUID对应的设备设置为OP(该OP不能给其他用户设置OP)(仅服务器创建者可用)
+/ban UUID --- 让UUID对应的设备上的所有客户端崩溃(仅OP可用)(慎用)
 """
         ]
         self.commands = {
             "help": lambda parameter: self.commands_help(),
-            "run_pythoncode": lambda parameter: self.commands_run_pythoncode(parameter)
+            "run_pythoncode": lambda parameter: self.commands_run_pythoncode(parameter),
+            "robot": lambda parameter: self.commands_robot(parameter),
+            "op": lambda parameter: self.commands_op(parameter),
+            "ban": lambda parameter: self.commands_ban(parameter)
         }
 
     # 函数定义区--------------------------
@@ -172,13 +195,15 @@ class Ui_MainWindow(object):
                 self.chat_text.append(strs)
                 if is_commands:
                     # 处理指令
+                    self.text_add("开始执行指令")
                     strs = strs[1:]
                     strs = list(strs.split(" "))
                     if len(strs) == 1:
                         strs.append("")
-                    print(strs)
+                    print(strs[0]," ",strs[1:])
                     try:
                         self.commands[strs[0]](strs[1:])
+                        self.text_add("指令执行完成")
                     except Exception as e:
                         self.text_add(f"执行指令时出错,错误信息:{e}")
 
@@ -218,7 +243,22 @@ class Ui_MainWindow(object):
             strs = str(strs, "UTF-8")
             # print(strs)
             # self.text_ += strs
-            self.chat_text.append(strs)
+            try:
+                if strs[:5]=="/data":
+                    if "give_op" in strs[5:]:
+                        if uuids in strs:
+                            self.is_server_op=True
+                            self.text_add("服务器创建者已设置你为管理员")
+
+                    elif "ban_user" in strs[5:]:
+                        if uuids in strs:
+                            self.text_add("管理员把你BAN了！！！")
+                            self.is_running=False
+                            self.chat_text.setText("")
+                else:
+                    self.chat_text.append(strs)
+            except:
+                self.chat_text.append(strs)
 
     def refresh_text(self):
         # 用来把缓存里的数据转移到聊天记录控件里(不然会炸内存啊啊啊啊啊啊啊啊啊啊啊)
@@ -241,6 +281,7 @@ class Ui_MainWindow(object):
         self.join_server.setEnabled(False)
         self.text_add("服务器加载完成")
         self.Built_in_server = True
+        self.is_server_op=True
         self.text_add("请输入用户名")
         self.join_sever_step = 2
 
