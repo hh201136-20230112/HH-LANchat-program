@@ -12,6 +12,7 @@ import socket
 import threading
 import time
 import uuid
+import random
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -116,6 +117,8 @@ class Ui_MainWindow(object):
             return 0
         name = lists[0]
         strs = lists[1]
+        s="qwertyuiopasdfghjklzxcvbnm1234567890"
+        self.s.send(bytes(f"{name}加入了服务器,UUID:{str(uuids)[:36]+str(s[random.randint(0,len(s)-1)])}","UTF-8"))
         self.s.send(bytes(f"{name}:{strs} - {time.strftime('%Y/%m/%d %H:%M')}", "utf-8"))
 
     def commands_op(self,UUID):
@@ -136,7 +139,7 @@ class Ui_MainWindow(object):
 指令列表:
 /help --- 获取关于指令的帮助信息
 /run_pythoncode 代码 --- 使用自带的Python解释器运行输入的代码(高危操作,可能导致程序崩溃)
-/robot 名字 文本 --- 以虚拟用户的身份发送信息
+/robot 名字 文本 --- 以虚拟用户的身份发送信息(会显示进群信息并分配一个假UUID)
 /data --- 特殊指令,用于传输数据,不会显示,客户端无法使用指令执行
 /op UUID --- 将UUID对应的设备设置为OP(该OP不能给其他用户设置OP)(仅服务器创建者可用)
 /ban UUID --- 让UUID对应的设备上的所有客户端崩溃(仅OP可用)(慎用)

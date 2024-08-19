@@ -42,7 +42,8 @@ def retransmission(index,name,uuid):
             sockets[index].close()
             return 0
         datas = sockets[index].recvfrom(2048)[0]
-        if str(datas)=="b''":continue
+        if str(datas)=="b''":
+            continue
         # print(f"接收数据:{datas}")
         for i in sockets:
             try:
