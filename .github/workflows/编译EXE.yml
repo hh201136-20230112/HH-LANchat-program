@@ -1,4 +1,4 @@
-
+# 本工作流使用了 sayyid5416/pyinstaller
 name: 编译EXE
 
 on:
