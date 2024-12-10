@@ -27,7 +27,7 @@ print(f"本机局域网IP：{myIP}")
 print("HH的局域网通讯程序-服务端 初始化完成")
 
 
-def retransmission(index,name,uuid):
+def retransmission(index:int,name:str,uuid:str):
     global sockets
     print(f"第{index}台设备已建立连接")
     sockets[index].setblocking(True)
@@ -36,7 +36,11 @@ def retransmission(index,name,uuid):
         try:
             i.send(a)
         except Exception as e:
-            pass
+            try:
+                i.close()
+            except:
+                pass
+            print(f"出现{e},套接字{sockets}已关闭")
     while True:
         if not is_running:
             sockets[index].close()
@@ -49,8 +53,12 @@ def retransmission(index,name,uuid):
             try:
                 i.send(datas)
             except Exception as e:
-                pass
-        print(f"来自第{index}台设备的信息转发完成")
+                try:
+                    i.close()
+                except:
+                    pass
+                print(f"出现{e},套接字{sockets}已关闭")
+        print(f"来自第{index}台设备(名称{name})的信息转发完成")
 
 
 def listen_socket():
@@ -98,7 +106,7 @@ def listen_socket():
                 new_s.send(bytes("hello", "utf-8"))  # 服务器在结束该连接请求前发送给客户端的数据
                 sockets.append(new_s)
                 print("启动数据处理线程")
-                ts = threading.Thread(target=retransmission, args=(len(sockets) - 1,yn.split(" ")[0][1:-1],client_uuid[:-1]))
+                ts = threading.Thread(target=retransmission, args=(len(sockets) - 1,yn.split(" ")[0][2:],client_uuid[:-1]))
                 ts.start()
                 t.append(ts)
                 print("已建立连接")
